@@ -1,0 +1,49 @@
+{
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
+    },
+    "config_munge": {
+        "files": {
+            "config.xml": {
+                "parents": {
+                    "/*": [
+                        {
+                            "xml": "<feature name=\"networkinterface\"><param name=\"browser-package\" value=\"networkinterface\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "installed_plugins": {
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.phonegap.helloworld"
+        },
+        "cordova-plugin-networkinterface": {
+            "PACKAGE_NAME": "com.Secretoca.Secretoca"
+        }
+    },
+    "dependent_plugins": {},
+    "modules": [
+        {
+            "file": "plugins/cordova-plugin-networkinterface/www/networkinterface.js",
+            "id": "cordova-plugin-networkinterface.networkinterface",
+            "pluginId": "cordova-plugin-networkinterface",
+            "clobbers": [
+                "window.networkinterface"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-networkinterface/src/browser/networkinterfaceProxy.js",
+            "id": "cordova-plugin-networkinterface.networkinterfaceProxy",
+            "pluginId": "cordova-plugin-networkinterface",
+            "runs": true
+        }
+    ],
+    "plugin_metadata": {
+        "cordova-plugin-whitelist": "1.2.2",
+        "cordova-plugin-networkinterface": "1.2.0"
+    }
+}
