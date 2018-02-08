@@ -1,4 +1,4 @@
-var URLAREAGOURMET = "http://192.168.13.202/";
+var URLAREAGOURMET = "http://192.168.29.202/";
 
 
 
