@@ -1,19 +1,26 @@
 var URLAREAGOURMET = "http://192.168.29.202/";
+var URLSALA        = "http://192.168.29.201/";
 
 
 
-var oldAV;
-var noOH = -998;
 var reloadInterval = 10100;
 
-var AsyncLock = 0;
-var AV='';
-var JSON_Todo='';
-var CommandInQueue='';
+var AsyncLockGourmet = 0;
+var AsyncLockSala = 0;
+var CommandInQueueGourmet='';
+var CommandInQueueSala   ='';
 
 
 function callAreaGourmet(str) {
   var url = URLAREAGOURMET + str;
+  var request = new XMLHttpRequest();
+  request.open("GET", url, false);
+  request.send(null);  
+    return;
+}
+
+function callSala(str) {
+  var url = URLSALA + str;
   var request = new XMLHttpRequest();
   request.open("GET", url, false);
   request.send(null);  
@@ -30,6 +37,16 @@ function callAreaGourmetJSON(str) {
   return JSON.parse(request.responseText);
 }
 
+function callSalaJSON(str) {
+  var url = URLSALA + str;
+  var request = new XMLHttpRequest();
+  console.log(url);
+  request.open("GET", url, false);
+  request.send(null); 
+  console.log(request.responseText);
+  return JSON.parse(request.responseText);
+}
+
 function setChurrasqueiraDisabled(disable=true) {
   Estrada      .disabled = disable;
   JardimGourmet.disabled = disable;
@@ -38,30 +55,38 @@ function setChurrasqueiraDisabled(disable=true) {
   Amplificador .disabled = disable;
 }
 
+function setSalaDisabled(disable=true) {
+  Entrada   .disabled = disable;
+  Varanda   .disabled = disable;
+  AmplSala  .disabled = disable;
+}
+
 function callAreaGourmetJSONAsync(str="STATUS") {
-    if (AsyncLock>0) {
-        AsyncLock ++;
-        if (AsyncLock < 5) {
-          //console.log("Incrementing Asynclock: " + AsyncLock);
+    if (AsyncLockGourmet>0) {
+        AsyncLockGourmet ++;
+        if (AsyncLockGourmet < 5) {
+          //console.log("Incrementing AsyncLockGourmetin "+sw+": " + AsyncLockGourmet);
           if (str!="STATUS") {
               //console.log("saved command: "+str);
               CommandInQueue = str;
           }
           return;
         }
-        console.log("Missed response: recovered from lost AsyncLock:" + AsyncLock);
+        console.log("Missed response in "+sw+": recovered from lost AsyncLockGourmet:" + AsyncLockGourmet);
     }
     
-    AsyncLock = 1;    
-    CommandInQueue = "";
-  var url = URLAREAGOURMET + str;
+    AsyncLockGourmet = 1;   
+    CommandInQueueGourmet = "";
+    
+  var url = "";
+  url = URLAREAGOURMET + str;
 
   var request = new XMLHttpRequest();
     request.timeout = 5000;
 
     request.onload = function() {
         //console.log("Load");
-        AsyncLock = 0;
+        AsyncLockGourmet = 0;
         if(request.readyState==4)
           if (request.status==200) {
             var params = JSON.parse(request.responseText);
@@ -69,23 +94,25 @@ function callAreaGourmetJSONAsync(str="STATUS") {
             for (var i = 0; i <= editItems.length-1; i++) {
               x = params[editItems[i].id];
               console.log("id "+i+": "+editItems[i].id +"-->"+x);
-              editItems[i].checked=(x==1);
+              if (x==1)
+                editItems[i].checked=true;
+              else if (x==0)
+                editItems[i].checked=false;
             }
             setChurrasqueiraDisabled(false);
           }
           else
               content = '';
-            
-        if (CommandInQueue!="") {
-          //console.log("Recursed for queued command: "+CommandInQueue);
-          callAreaGourmetJSONAsync(CommandInQueue);
+        
+        if (CommandInQueueGourmet!="") {
+          //console.log("Recursed for queued command: "+CommandInQueueGourmet);
+          callChurrasqueiraJSONAsync(CommandInQueueGourmet);
         }
-            
     };
     request.ontimeout = function() {
         console.log("Timed out");
         setChurrasqueiraDisabled(false);
-        AsyncLock = 0;
+        AsyncLockGourmet = 0;
     };
 
     setChurrasqueiraDisabled(true);
@@ -94,11 +121,80 @@ function callAreaGourmetJSONAsync(str="STATUS") {
     request.send(null);  
 }
 
+function callSalaJSONAsync(str="STATUS") {
+    if (AsyncLockSala>0) {
+        AsyncLockSala ++;
+        if (AsyncLockSala < 5) {
+          //console.log("Incrementing AsyncLockSalain "+sw+": " + AsyncLockSala);
+          if (str!="STATUS") {
+              //console.log("saved command: "+str);
+              CommandInQueue = str;
+          }
+          return;
+        }
+        console.log("Missed response in "+sw+": recovered from lost AsyncLockSala:" + AsyncLockSala);
+    }
+    
+    AsyncLockSala = 1;   
+    CommandInQueueSala = "";
+    
+  var url = "";
+  url = URLSALA + str;
+
+  var requestSala = new XMLHttpRequest();
+    requestSala.timeout = 5000;
+
+    requestSala.onload = function() {
+        //console.log("Load");
+        AsyncLockSala = 0;
+        if(requestSala.readyState==4)
+          if (requestSala.status==200) {
+            var params = JSON.parse(requestSala.responseText);
+            var editItems = document.querySelectorAll("input");
+            for (var i = 0; i <= editItems.length-1; i++) {
+              x = params[editItems[i].id];
+              console.log("id "+i+": "+editItems[i].id +"-->"+x);
+              if (x==1)
+                editItems[i].checked=true;
+              else if (x==0)
+                editItems[i].checked=false;
+            }
+            setSalaDisabled(false);
+          }
+          else
+              content = '';
+        
+        if (CommandInQueueSala!="") {
+          //console.log("Recursed for queued command: "+CommandInQueueSala);
+          callSalaJSONAsync(CommandInQueueSala);
+        }
+          
+            
+    };
+    requestSala.ontimeout = function() {
+        console.log("Timed out");
+        setSalaDisabled(false);
+        AsyncLockSala = 0;
+    };
+
+    setSalaDisabled(true);
+    requestSala.open("GET", url, true); 
+    console.log(url);
+    requestSala.send(null);  
+}
+
 
 
 function RenderAreaGourmetSwitches() {
+  console.log("render Churrasqueira");
   callAreaGourmetJSONAsync();
 };
+
+function RenderSalaSwitches() {
+  console.log("render sala");
+  callSalaJSONAsync();
+};
+
 
 function SaveAreaGourmetSwitch(name="") {
   var editItem = document.getElementById(name);
@@ -109,25 +205,15 @@ function SaveAreaGourmetSwitch(name="") {
   callAreaGourmetJSONAsync(s);
 };
 
-
-
-
-
-function SaveAreaGourmetSwitches() {
-  var params=callAreaGourmetJSON("STATUS");
-  var editItems = document.querySelectorAll("input");
-  for (var i = 0; i <= editItems.length-1; i++) {
-    var chk = editItems[i].checked;
-    var prm = params[editItems[i].id]==1;
-    console.log("ID: "+editItems[i].id+"  name: "+editItems[i].name+ "  edit: "+chk+"   params: "+prm);
-    if (chk != prm) {
-      var s = editItems[i].name+(1-prm);
-      console.log("changing: "+s);
-      callAreaGourmet(s);
-    }
-  }
-  RenderAreaGourmetSwitches();
+function SaveSalaSwitch(name="") {
+  var editItem = document.getElementById(name);
+  var chk = editItem.checked;
+  console.log("ID: "+editItem.id+"  name: "+editItem.name+ "  edit: "+chk);
+  var s = "."+editItem.name + (chk?'1':'0');
+  console.log("changing: "+s);
+  callSalaJSONAsync(s);
 };
+
 
 
 

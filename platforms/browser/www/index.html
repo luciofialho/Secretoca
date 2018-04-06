@@ -113,7 +113,7 @@ input:checked + .slider:before {
 </style>    
     
     
-    <body onload="RenderAreaGourmetSwitches()">
+    <body onload="{RenderSalaSwitches();RenderAreaGourmetSwitches(); }">
 
     
         <h1>Secretoca</h1>
@@ -128,7 +128,15 @@ input:checked + .slider:before {
     <tr>
       <td> Jardim </td>
       <td> <label class="switch"> <input id="JardimGourmet" name="J" type="checkbox" value="1" onclick="{SaveAreaGourmetSwitch('JardimGourmet');}"> <span class="slider round"></span></label></div></td>
-    </tr>      
+    </tr>  
+    <tr>
+      <td> Entrada/Garagem </td>
+      <td> <label class="switch"> <input id="Entrada" name="N" type="checkbox" value="1" onclick="{SaveSalaSwitch('Entrada');}"> <span class="slider round"></span></label></div></td>
+    </tr>  
+    <tr>
+      <td> Varanda </td>
+      <td> <label class="switch"> <input id="Varanda" name="V" type="checkbox" value="1" onclick="{SaveSalaSwitch('Varanda');}"> <span class="slider round"></span></label></div></td>
+    </tr>  
     <tr>
       <td> Churrasqueira </td>
       <td> <label class="switch"> <input id="Gourmet" name="G" type="checkbox" value="1" onclick="{SaveAreaGourmetSwitch('Gourmet');}"> <span class="slider round"></span></label></div></td>
@@ -138,8 +146,12 @@ input:checked + .slider:before {
       <td> <label class="switch"> <input id="Piscina" name="P" type="checkbox" value="1" onclick="{SaveAreaGourmetSwitch('Piscina');}"> <span class="slider round"></span></label></div></td>
     </tr>      
     <tr>
-      <td> Amplificador </td>
+      <td> Amplific. churras.</td>
       <td> <label class="switch"> <input id="Amplificador" name="A" type="checkbox" value="1" onclick="{SaveAreaGourmetSwitch('Amplificador');}"> <span class="slider round"></span></label></div></td>
+    </tr>      
+    <tr>
+      <td> Amplific. sala</td>
+      <td> <label class="switch"> <input id="AmplSala" name="M" type="checkbox" value="1" onclick="{SaveSalaSwitch('AmplSala');}"> <span class="slider round"></span></label></div></td>
     </tr>      
 
     
@@ -147,10 +159,9 @@ input:checked + .slider:before {
 
   <br>
 <center>
-  <button onclick="{RenderAreaGourmetSwitches();}">refresh</button>
-  <button onclick="{SaveAreaGourmetSwitches();}">save</button>
+  <button onclick="{RenderSalaSwitches();RenderAreaGourmetSwitches()}">refresh</button>
 <br>
 <br>
-  <button onclick="{callAreaGourmet('LEAVE');}">Saida</button>
+  <button onclick="{callAreaGourmet('LEAVE');callSala('LEAVE');}">Saida</button>
     </body>
 </html>
